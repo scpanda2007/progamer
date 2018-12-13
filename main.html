@@ -1,0 +1,96 @@
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Vue Example</title>
+	<style type="text/css">
+	body,html {
+		height: 100%;
+		margin: 0;
+		padding: 0;
+		color: #fff;
+		font-family: Arial
+	}
+	
+	.layout {
+		float: left;
+		height: 100%;
+		width: 48%;
+		background: #888;
+		border: 1px yellow solid;
+	}
+	
+	</style>
+	
+</head>
+<body>
+	<div id="app" class="layout">
+		<input type="text" v-model="name" placeholder="你的名字">
+		<h1>你好, {{ name }}</h1>
+		<p v-if="showLine">隐藏文本</p>
+	</div>
+	<div id="appShow" class="layout">
+		<p v-html="text"></p>
+		<child-component>
+			<h2 slot="header">标题</h2>
+			<p>正文内容</p>
+			<p>更多的正文内容</p>
+			<div slot="footer">底部信息</div>
+		</child-component>
+		<canvas id="glcanvas" width = "512px" height="512px" style="border:dashed 1px #CCC"></canvas>
+		
+	</div>
+	<script src="http://unpkg.com/vue/dist/vue.min.js"></script>
+	<script src="./lib/live2d.js"></script>
+	<script src="./target-projects/project_live2d/src/Simple.js"></script>
+	<script >
+	
+		Vue.component(
+			'child-component', {
+				template: '\
+					<div class="container">\
+					<div class="header">\
+						<slot name="header"></slot>\
+					</div>\
+					<div class="main">\
+						<slot></slot>\
+					</div>\
+					<div class="footer">\
+						<slot name="footer"></slot>\
+					</div>\
+				</div>',
+				mounted: function(){
+					var header = this.$slots.header;
+					var main = this.$slots.default;
+					var footer = this.$slots.footer;
+					console.log(footer);
+					console.log(footer[0].elm.innerHTML);
+				
+				}
+			}
+		)
+	
+		var app = new Vue({
+			el: '#app',
+			data: {
+				name: '',
+				showLine: true
+			}
+		})
+		
+		var appShow = new Vue({
+			el: '#appShow',
+			data: {
+				
+			},
+			computed: {
+				text: function(){
+					return app.name;
+				}
+			},
+			mounted: function(){
+				Simple();
+			}
+		})
+	</script>
+</body>
+</html>
