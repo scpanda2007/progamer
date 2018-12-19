@@ -33,8 +33,8 @@ var Simple = function() {
 	var eye = new DVector3( 0, 0, 1 );
 	var target = new DVector3( 0, 0, 0 );
 	var up = new DVector3( 0, 1, 0 );
-	this.translationMatrix = new DMatrix4().makeTranslation( -1000, -1000, -2000 );
-	this.rotationMatrix = new DMatrix4().makeRotationY(-0.4);
+	this.translation = new DVector3( -1000, -1000, -2000 );
+	this.rotation = new DQuaternion(0.1, 0.1, .1);
     this.modelViewMatrix = new DMatrix4().lookAt(eye, target, up);
 	//this.cameraPerspectiveMatrix = new DMatrix4().makeOrthographic( -1000, 1000, -1000, 1000, .1, 1000 );
 	this.cameraPerspectiveMatrix = new DMatrix4().makePerspective( -1000, 1000, -1000, 1000, 500, 100000 );
@@ -90,7 +90,11 @@ var Simple = function() {
 
 Simple.updateAndGetShaderMatrix4 = function(){
 	//
-	return (vetex_shader_matrix.copy(cameraPerspectiveMatrix).multiply(modelViewMatrix).multiply(translationMatrix).multiply(rotationMatrix));
+	return (
+		vetex_shader_matrix.copy(cameraPerspectiveMatrix).multiply(modelViewMatrix).
+		multiply(new DMatrix4().makeTranslation(translation.x, translation.y, translation.z)).
+		multiply(new DMatrix4().makeRotationFromQuaternion(rotation))
+	);
 }
 
 Simple.translate = function(){

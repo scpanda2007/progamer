@@ -10,7 +10,8 @@
  */
 var DMatrix4;
 var DVector3; 
- 
+var DQuaternion;
+
 (function(){
  
 function Euler( x, y, z, order ) {
@@ -4342,6 +4343,7 @@ Object.assign( Quaternion.prototype, {
 } );
 	DMatrix4 = Matrix4;
 	DVector3 = Vector3;
+	DQuaternion = Quaternion;
 })();
 
 // export { Matrix4 };
