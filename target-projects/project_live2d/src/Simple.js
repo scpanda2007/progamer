@@ -29,17 +29,30 @@ var Simple = function() {
     
     
     this.loadedImages = [];
-    
-    
+	
+	var eye = new DVector3( 0, 0, 1 );
+	var target = new DVector3( 0, 0, 0 );
+	var up = new DVector3( 0, 1, 0 );
+	this.translationMatrix = new DMatrix4().makeTranslation( -1000, -1000, -2000 );
+	this.rotationMatrix = new DMatrix4().makeRotationY(-0.4);
+    this.modelViewMatrix = new DMatrix4().lookAt(eye, target, up);
+	//this.cameraPerspectiveMatrix = new DMatrix4().makeOrthographic( -1000, 1000, -1000, 1000, .1, 1000 );
+	this.cameraPerspectiveMatrix = new DMatrix4().makePerspective( -1000, 1000, -1000, 1000, 500, 100000 );
+	//console.log(this.translationMatrix.toArray());
+	//console.log(this.modelViewMatrix.toArray());
+	//console.log(this.cameraPerspectiveMatrix.toArray());
+	
+	this.vetex_shader_matrix = new DMatrix4();
+	
     this.modelDef = {
         
         "type":"Live2D Model Setting",
         "name":"haru",
-        "model":"target-projects/project_live2d/assets/haru/haru.moc",
+        "model":"../project_live2d/assets/haru/haru.moc",
         "textures":[
-            "target-projects/project_live2d/assets/haru/haru.1024/texture_00.png",
-            "target-projects/project_live2d/assets/haru/haru.1024/texture_01.png",
-            "target-projects/project_live2d/assets/haru/haru.1024/texture_02.png"
+            "../project_live2d/assets/haru/haru.1024/texture_00.png",
+            "../project_live2d/assets/haru/haru.1024/texture_01.png",
+            "../project_live2d/assets/haru/haru.1024/texture_02.png"
         ]
     };
     
@@ -75,7 +88,14 @@ var Simple = function() {
 	Simple.initLoop(canvas);
 };
 
+Simple.updateAndGetShaderMatrix4 = function(){
+	//
+	return (vetex_shader_matrix.copy(cameraPerspectiveMatrix).multiply(modelViewMatrix).multiply(translationMatrix).multiply(rotationMatrix));
+}
 
+Simple.translate = function(){
+	
+}
 
 Simple.initLoop = function(canvas) 
 {
@@ -163,8 +183,18 @@ Simple.draw = function(gl)
 
         
         var s = 2.0 / live2DModel.getCanvasWidth(); 
-        var matrix4x4 = [ s,0,0,0 , 0,-s,0,0 , 0,0,1,0 , -1.0,1,0,1 ];
-        live2DModel.setMatrix(matrix4x4);
+		s = 0.001;
+		var matrix4x4;
+        //matrix4x4 = [s,    0, 0, 0, 0, -s,     0,0,0,0, 1,          0, -1.0,   1,       0, 1];
+		//matrix4x4 = [0.01, 0, 0, 0, 0, -0.001, 0,0,0,0, -0.02002002,0, -0.001, -0.001, -1.002002002002, 1];
+		//matrix4x4   = [0.001, 0, 0, 0, 0, -0.001, 0,0,0,0, -0.02002002,0, -0.001, -0.001, -1.002002002002, 1];
+		//console.log(matrix4x4);
+		//live2DModel.setMatrix(matrix4x4);
+		matrix4x4 = Simple.updateAndGetShaderMatrix4().toArray();
+		//matrix4x4 = Simple.updateAndGetShaderMatrix4().getArrayWithRowAndColumnSwitched();
+		//matrix4x4 = new DMatrix4().set(s,0,0,0 , 0,-s,0,0 , 0,0,1,0 , -1.0,1,0,1).getArrayWithRowAndColumnSwitched();
+		console.log(matrix4x4);
+		live2DModel.setMatrix(matrix4x4);
 	}
     
 	
